@@ -333,6 +333,11 @@
              */
             useCommaKey: true,
 
+            /**
+             * If set to true, using space will validate the user's choice
+             */
+            useSpaceKey: true,
+
 
             /**
              * Determines whether or not the results will be displayed with a zebra table style
@@ -684,10 +689,10 @@
                     }
                     var _groupItemHeight = ms.combobox.find('.ms-res-group').outerHeight();
                     if(_groupItemHeight !== null) {
-                      var tmpResHeight = nbGroups * _groupItemHeight;
-                      resHeight = (_comboItemHeight * data.length) + tmpResHeight;
+                        var tmpResHeight = nbGroups * _groupItemHeight;
+                        resHeight = (_comboItemHeight * data.length) + tmpResHeight;
                     } else {
-                      resHeight = _comboItemHeight * (data.length + nbGroups);
+                        resHeight = _comboItemHeight * (data.length + nbGroups);
                     }
                 }
 
@@ -714,12 +719,12 @@
 
                 // When free entry is off, add invalid class to input if no data matches
                 if(cfg.allowFreeEntries === false) {
-                  if(data.length === 0) {
-                      $(ms.input).addClass(cfg.invalidCls);
-                      ms.combobox.hide();
-                  } else {
-                    $(ms.input).removeClass(cfg.invalidCls);
-                  }
+                    if(data.length === 0) {
+                        $(ms.input).addClass(cfg.invalidCls);
+                        ms.combobox.hide();
+                    } else {
+                        $(ms.input).removeClass(cfg.invalidCls);
+                    }
                 }
             },
 
@@ -862,11 +867,11 @@
                 // holds the main div, will relay the focus events to the contained input element.
                 ms.container = $('<div/>', {
                     'class': 'ms-ctn form-control ' + (cfg.resultAsString ? 'ms-as-string ' : '') + cfg.cls +
-                        ($(el).hasClass('input-lg') ? ' input-lg' : '') +
-                        ($(el).hasClass('input-sm') ? ' input-sm' : '') +
-                        (cfg.disabled === true ? ' ms-ctn-disabled' : '') +
-                        (cfg.editable === true ? '' : ' ms-ctn-readonly') +
-                        (cfg.hideTrigger === false ? '' : ' ms-no-trigger'),
+                    ($(el).hasClass('input-lg') ? ' input-lg' : '') +
+                    ($(el).hasClass('input-sm') ? ' input-sm' : '') +
+                    (cfg.disabled === true ? ' ms-ctn-disabled' : '') +
+                    (cfg.editable === true ? '' : ' ms-ctn-readonly') +
+                    (cfg.hideTrigger === false ? '' : ' ms-no-trigger'),
                     style: cfg.style,
                     id: cfg.id
                 });
@@ -997,8 +1002,8 @@
                     var disabled = cfg.disabledField !== null && value[cfg.disabledField] === true;
                     var resultItemEl = $('<div/>', {
                         'class': 'ms-res-item ' + (isGrouped ? 'ms-res-item-grouped ':'') +
-                            (disabled ? 'ms-res-item-disabled ':'') +
-                            (index % 2 === 1 && cfg.useZebraStyle === true ? 'ms-res-odd' : ''),
+                        (disabled ? 'ms-res-item-disabled ':'') +
+                        (index % 2 === 1 && cfg.useZebraStyle === true ? 'ms-res-odd' : ''),
                         html: cfg.highlight === true ? self._highlightSuggestion(displayed) : displayed,
                         'data-json': JSON.stringify(value)
                     });
@@ -1203,15 +1208,15 @@
                 } else if(cfg.vtype !== null) {
                     switch(cfg.vtype){
                         case 'alpha':
-                        return (/^[a-zA-Z_]+$/).test(value);
+                            return (/^[a-zA-Z_]+$/).test(value);
                         case 'alphanum':
-                        return (/^[a-zA-Z0-9_]+$/).test(value);
+                            return (/^[a-zA-Z0-9_]+$/).test(value);
                         case 'email':
-                        return (/^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/).test(value);
+                            return (/^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/).test(value);
                         case 'url':
-                        return (/(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i).test(value);
+                            return (/(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i).test(value);
                         case 'ipaddress':
-                        return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).test(value);
+                            return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).test(value);
                     }
                 }
                 return true;
@@ -1364,6 +1369,11 @@
                             e.preventDefault();
                         }
                         break;
+                    case KEYCODES.SPACE:
+                        if(cfg.useSpaceKey === true){
+                            e.preventDefault();
+                        }
+                        break;
                     case KEYCODES.CTRL:
                         _ctrlDown = true;
                         break;
@@ -1413,29 +1423,30 @@
                 switch(e.keyCode) {
                     case KEYCODES.UPARROW:
                     case KEYCODES.DOWNARROW:
-                    e.preventDefault();
-                    break;
+                        e.preventDefault();
+                        break;
                     case KEYCODES.ENTER:
                     case KEYCODES.TAB:
                     case KEYCODES.COMMA:
-                    if(e.keyCode !== KEYCODES.COMMA || cfg.useCommaKey === true) {
-                        e.preventDefault();
-                        if(cfg.expanded === true){ // if a selection is performed, select it and reset field
-                            selected = ms.combobox.find('.ms-res-item-active:not(.ms-res-item-disabled):first');
-                            if(selected.length > 0) {
-                                self._selectItem(selected);
-                                return;
+                    case KEYCODES.SPACE:
+                        if(e.keyCode !== KEYCODES.COMMA || cfg.useCommaKey === true) {
+                            e.preventDefault();
+                            if(cfg.expanded === true){ // if a selection is performed, select it and reset field
+                                selected = ms.combobox.find('.ms-res-item-active:not(.ms-res-item-disabled):first');
+                                if(selected.length > 0) {
+                                    self._selectItem(selected);
+                                    return;
+                                }
                             }
+                            // if no selection or if freetext entered and free entries allowed, add new obj to selection
+                            if(inputValid === true && cfg.allowFreeEntries === true) {
+                                obj[cfg.displayField] = obj[cfg.valueField] = freeInput.trim();
+                                ms.addToSelection(obj);
+                                ms.collapse(); // reset combo suggestions
+                                ms.input.focus();
+                            }
+                            break;
                         }
-                        // if no selection or if freetext entered and free entries allowed, add new obj to selection
-                        if(inputValid === true && cfg.allowFreeEntries === true) {
-                            obj[cfg.displayField] = obj[cfg.valueField] = freeInput.trim();
-                            ms.addToSelection(obj);
-                            ms.collapse(); // reset combo suggestions
-                            ms.input.focus();
-                        }
-                        break;
-                    }
                     default:
                         if(_selection.length === cfg.maxSelection){
                             self._updateHelper(cfg.maxSelectionRenderer.call(this, _selection.length));
@@ -1561,5 +1572,5 @@
         return obj;
     };
 
-   $.fn.magicSuggest.defaults = {};
+    $.fn.magicSuggest.defaults = {};
 })(jQuery);
